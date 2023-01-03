@@ -1,6 +1,6 @@
 # Citations
 pytorch implementation of MLP-Mixer: https://arxiv.org/pdf/2105.01601.pdf
-![](../imgs/mlpmixer.png)
+![](../imgs/mlpmixer.jpg)
 ```bibtex
 @misc{tolstikhin2021mlpmixer,
     title   = {MLP-Mixer: An all-MLP Architecture for Vision},
@@ -15,12 +15,12 @@ pytorch implementation of MLP-Mixer: https://arxiv.org/pdf/2105.01601.pdf
 <br>
 
 pytorch implementation of ConvMixer: https://openreview.net/pdf?id=TVHS5Y4dNvM 
-![](../imgs/convmixer.png)
+![](../imgs/convmixer.jpg)
 <br>
 <br>
 
 pytorch implementation of ResMLP: https://arxiv.org/pdf/2105.03404.pdf
-![](../imgs/resmlp.png)
+![](../imgs/resmlp.jpg)
 ```bibtex
 @article{touvron2021resmlp,
   title={Resmlp: Feedforward networks for image classification with data-efficient training},

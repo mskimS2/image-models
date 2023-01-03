@@ -18,9 +18,8 @@ This is a visualization of the attention map of the last layer of Vit and dino. 
 <br>
 
 This is the result of visualizing the embedding layer of mlp-mixer trained on cifar10. (patch size=4)
+![](assets/mlpmixer_layer.jpg)
 
-![](assets/mlpmixer_layer.png)
-<br>
 <br>
 
 
