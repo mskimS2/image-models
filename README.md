@@ -13,10 +13,12 @@ This repository is an unofficial PyTorch implementation of Feedforward and Trans
 
 # Layer Visualization Results
 This is a visualization of the attention map of the last layer of Vit and dino. The top figure is Vit pretrained from the Imagenet dataset, and the bottom figure is the result of dino's attention map visualization.
-![](assets/attention_map.jpg)
+
+![attention_map](assets/attention_map.jpg)
 
 This is the result of visualizing the embedding layer of mlp-mixer trained on cifar10. (patch size=4)
-![](assets/mlpmixer_layer.jpg)
+
+![mlpmixer_layer](assets/mlpmixer_layer.jpg)
 
 
 # Reference
