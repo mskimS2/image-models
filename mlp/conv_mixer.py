@@ -2,8 +2,6 @@ import torch
 import torchsummary
 from torch import nn
 
-# https://github.com/locuslab/convmixer-cifar10/blob/main/train.py
-
 
 class ConvMixer(nn.Module):
 

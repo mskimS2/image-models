@@ -3,9 +3,6 @@ import numpy as np
 from torch import nn
 from einops.layers.torch import Rearrange
 
-# https://github.com/rishikksh20/ResMLP-pytorch/blob/master/resmlp.py
-# https://github.com/jaketae/res-mlp/blob/master/res_mlp/core.py
-
 
 class AffineTransformLayer(nn.Module):
     def __init__(

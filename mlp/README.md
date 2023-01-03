@@ -1,5 +1,6 @@
 # Citations
-pytorch implementation of MLP-Mixer: https://arxiv.org/pdf/2105.01601.pdf
+### pytorch implementation of MLP-Mixer: https://arxiv.org/pdf/2105.01601.pdf
+
 ![](../assets/mlpmixer.jpg)
 ```bibtex
 @misc{tolstikhin2021mlpmixer,
@@ -14,12 +15,12 @@ pytorch implementation of MLP-Mixer: https://arxiv.org/pdf/2105.01601.pdf
 <br>
 <br>
 
-pytorch implementation of ConvMixer: https://openreview.net/pdf?id=TVHS5Y4dNvM 
+### pytorch implementation of ConvMixer: https://openreview.net/pdf?id=TVHS5Y4dNvM 
 ![](../assets/convmixer.jpg)
 <br>
 <br>
 
-pytorch implementation of ResMLP: https://arxiv.org/pdf/2105.03404.pdf
+### pytorch implementation of ResMLP: https://arxiv.org/pdf/2105.03404.pdf
 ![](../assets/resmlp.jpg)
 ```bibtex
 @article{touvron2021resmlp,
