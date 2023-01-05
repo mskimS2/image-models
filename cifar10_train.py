@@ -8,6 +8,7 @@ from dataset import CIFAR10
 from trainer.config import Config
 from trainer.trainer import Trainer
 from mlp.mlp_mixer import MlpMixer
+from transform.auto_aug import AutoAugment
 
 
 class ImageClassifier(nn.Module):
@@ -84,6 +85,9 @@ if __name__ == "__main__":
 
     train_aug = transforms.Compose(
         [
+            transforms.RandomResizedCrop(32),
+            transforms.RandomHorizontalFlip(p=0.5),
+            AutoAugment(),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.4914, 0.4822, 0.4465],
                                  std=[0.2023, 0.1994, 0.2010])
