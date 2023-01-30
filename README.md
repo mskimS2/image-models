@@ -1,3 +1,4 @@
+# Pytorch implementation of the various sota(state of the art) models
 This repository is an unofficial PyTorch implementation of Feedforward and Transformer based Networks (such as mlp-mixer, vit, ...). most experiments are performed on small benchmark datasets.
 <br>
 <br>
