@@ -111,7 +111,7 @@ class ImageDataset:
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
         if self.transforms is not None:
-            image_tensor = self.augmentations(image=image)['image']
+            image_tensor = self.transforms(image=image)['image']
 
         # test mode
         if targets is None:
