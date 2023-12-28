@@ -14,7 +14,7 @@ class AffineTransformLayer(nn.Module):
             hidden_dim : int
                 Dimensionality of AffineTransform Layer.
         """
-        super().__init__()
+        super(self, AffineTransformLayer).__init__()
 
         self.alpha = nn.Parameter(torch.ones([1, 1, hidden_dim]))
         self.beta = nn.Parameter(torch.zeros([1, 1, hidden_dim]))
@@ -32,7 +32,7 @@ class FeedForwardLayer(nn.Module):
         hidden_dim: int,
         dropout_p: float = 0.
     ):
-        super().__init__()
+        super(FeedForwardLayer, self).__init__()
 
         self.net = nn.Sequential(
             nn.Linear(input_dim, hidden_dim),
@@ -56,7 +56,7 @@ class CommunicationLayer(nn.Module):
         dropout: float,
         init_values: float = 1e-4
     ):
-        super().__init__()
+        super(CommunicationLayer, self).__init__()
 
         self.pre_affine = AffineTransformLayer(input_dim)
         self.token_mix = nn.Sequential(
@@ -99,7 +99,7 @@ class ResMLP(nn.Module):
         n_layers: int,
         num_classes: int,
     ):
-        super().__init__()
+        super(ResMLP, self).__init__()
 
         assert image_size % patch_size == 0, 'Image dimensions must be divisible by the patch size.'
         self.num_patch = (image_size // patch_size) ** 2

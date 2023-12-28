@@ -9,7 +9,7 @@ from trainer.config import Config
 from trainer.trainer import Trainer
 from mlp.mlp_mixer import MlpMixer
 from transform.auto_aug import AutoAugment
-
+from utils import get_parameters
 
 class ImageClassifier(nn.Module):
     def __init__(self, model):
@@ -71,14 +71,6 @@ class ImageClassifier(nn.Module):
                 nn.init.xavier_uniform_(m.weight)
                 if m.bias is not None:
                     nn.init.zeros_(m.bias)
-
-
-def get_parameters(model: torch.nn.Module):
-    parameters = filter(lambda p: p.requires_grad, model.parameters())
-    parameters = sum([np.prod(p.size()) for p in parameters]) / 1_000
-    print('Trainable Parameters: %.3fK' % parameters)
-
-    return parameters
 
 
 if __name__ == "__main__":

@@ -11,6 +11,7 @@ from mlp.mlp_mixer import MlpMixer
 from mlp.res_mlp import ResMLP
 from mlp.conv_mixer import ConvMixer
 from transformer.vit import VisionTransformer
+from utils import get_parameters
 
 
 class ImageClassifier(nn.Module):

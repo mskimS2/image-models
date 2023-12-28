@@ -14,7 +14,7 @@ class ConvMixer(nn.Module):
         patch_size: int = 2,
         num_classes: int = 10
     ):
-        super().__init__()
+        super(ConvMixer, self).__init__()
 
         sublayer = nn.Sequential(
             nn.Conv2d(
@@ -60,7 +60,7 @@ class ConvMixer(nn.Module):
 
 class Residual(nn.Module):
     def __init__(self, layer):
-        super().__init__()
+        super(Residual, self).__init__()
         self.layer = layer
 
     def forward(self, x):

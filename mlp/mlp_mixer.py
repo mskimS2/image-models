@@ -48,7 +48,7 @@ class MlpMixer(nn.Module):
         n_layers: int,
         num_classes: int,
     ):
-        super().__init__()
+        super(MlpMixer, self).__init__()
         n_patches = (image_size // patch_size) ** 2
 
         self.patch_embedder = nn.Sequential(
@@ -118,7 +118,7 @@ class FeedforwardLayer(nn.Module):
     """
 
     def __init__(self, dim, mlp_dim=None, dropout_p: float = 0.):
-        super().__init__()
+        super(FeedforwardLayer, self).__init__()
 
         mlp_dim = dim if mlp_dim is None else mlp_dim
         self.linear_1 = nn.Linear(dim, mlp_dim)
@@ -180,7 +180,7 @@ class MixerBlock(nn.Module):
         channels_mlp_dim: int,
         dropout_p: float
     ):
-        super().__init__()
+        super(MixerBlock, self).__init__()
 
         self.norm1 = nn.LayerNorm(hidden_dim)
         self.norm2 = nn.LayerNorm(hidden_dim)
