@@ -7,11 +7,11 @@ class MlpMixer(nn.Module):
     """MLP-Mixer network.
     Args
     ----
-        image_size : int
+        img_size : int
             Height and width (assuming it is a square) of the input image.
         patch_size : int
             Height and width (assuming it is a square) of the patches. Note
-            that we assume that `image_size % patch_size == 0`.
+            that we assume that `img_size % patch_size == 0`.
         tokens_mlp_dim : int
             Hidden dimension for the `MlpBlock` when doing the token mixing.
         channels_mlp_dim : int
@@ -39,7 +39,7 @@ class MlpMixer(nn.Module):
     def __init__(
         self,
         in_channels: int,
-        image_size: int,
+        img_size: int,
         patch_size: int,
         tokens_mlp_dim: int,
         channels_mlp_dim: int,
@@ -47,10 +47,10 @@ class MlpMixer(nn.Module):
         dropout_p: float,
         n_layers: int,
         num_classes: int,
-    ):
+    ) -> None:
         super(MlpMixer, self).__init__()
-        n_patches = (image_size // patch_size) ** 2
-
+            
+        n_patches = (img_size // patch_size) ** 2
         self.patch_embedder = nn.Sequential(
             nn.Conv2d(
                 in_channels,
@@ -60,7 +60,6 @@ class MlpMixer(nn.Module):
             ),
             Rearrange('n c h w -> n (h w) c')
         )
-
         self.layers = nn.Sequential(
             *[
                 MixerBlock(
@@ -74,16 +73,15 @@ class MlpMixer(nn.Module):
             ],
             nn.LayerNorm(hidden_dim)
         )
-
         self.classifier = nn.Linear(hidden_dim, num_classes)
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Run the forward pass.
         Args
         ----
         x : torch.Tensor
             Input batch of square images of shape
-            `(batch_size, n_channels, image_size, image_size)`.
+            `(batch_size, n_channels, img_size, img_size)`.
 
         Returns
         -------
@@ -94,9 +92,7 @@ class MlpMixer(nn.Module):
         x = self.patch_embedder(x)  # (batch_size, n_patches, hidden_dim)
         x = self.layers(x)          # (batch_size, n_patches, hidden_dim)
         x = x.mean(dim=1)           # (batch_size, hidden_dim)
-        out = self.classifier(x)    # (batch_size, n_classes)
-
-        return out
+        return self.classifier(x)    # (batch_size, n_classes)
 
 
 class FeedforwardLayer(nn.Module):
@@ -117,7 +113,7 @@ class FeedforwardLayer(nn.Module):
             Activation.
     """
 
-    def __init__(self, dim, mlp_dim=None, dropout_p: float = 0.):
+    def __init__(self, dim, mlp_dim=None, dropout_p: float = 0.) -> None:
         super(FeedforwardLayer, self).__init__()
 
         mlp_dim = dim if mlp_dim is None else mlp_dim
@@ -127,7 +123,7 @@ class FeedforwardLayer(nn.Module):
         self.drop2 = nn.Dropout(dropout_p)
         self.linear_2 = nn.Linear(mlp_dim, dim)
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Run the forward pass.
         Args
         ----
@@ -145,7 +141,6 @@ class FeedforwardLayer(nn.Module):
         x = self.drop1(x)
         x = self.linear_2(x)  # (batch_size, *, dim)
         x = self.drop2(x)
-
         return x
 
 
@@ -179,7 +174,7 @@ class MixerBlock(nn.Module):
         tokens_mlp_dim: int,
         channels_mlp_dim: int,
         dropout_p: float
-    ):
+    ) -> None:
         super(MixerBlock, self).__init__()
 
         self.norm1 = nn.LayerNorm(hidden_dim)
@@ -191,7 +186,7 @@ class MixerBlock(nn.Module):
             hidden_dim, channels_mlp_dim, dropout_p
         )
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         Args
             x : torch.Tensor
@@ -211,9 +206,7 @@ class MixerBlock(nn.Module):
         y = self.norm2(x)   # (batch_size, n_patches, hidden_dim)
 
         # (batch_size, n_patches, hidden_dim)
-        res = x + self.channel_mlp_block(y)
-
-        return res
+        return x + self.channel_mlp_block(y)
 
 
 if __name__ == '__main__':
@@ -221,7 +214,7 @@ if __name__ == '__main__':
 
     mlpmixer = MlpMixer(
         in_channels=3,
-        image_size=32,
+        img_size=32,
         patch_size=4,
         tokens_mlp_dim=64,
         channels_mlp_dim=512,

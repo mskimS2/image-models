@@ -12,7 +12,7 @@ def get_model(config):
     if config.model_name == "mlpmixer":
         return MlpMixer(
             in_channels=config.in_channels,
-            image_size=config.img_size,
+            img_size=config.img_size,
             patch_size=config.patch_size,
             tokens_mlp_dim=config.tokens_mlp_dim,
             channels_mlp_dim=config.channels_mlp_dim,
@@ -23,7 +23,7 @@ def get_model(config):
         ).to(config.device)
     elif config.model_name == "resmlp":
         return ResMLP(
-            image_size=config.image_size,
+            img_size=config.img_size,
             in_channels=config.in_channels,
             patch_size=config.patch_size,
             input_dim=config.input_dim,
@@ -61,5 +61,4 @@ def get_parameters(model: torch.nn.Module):
     parameters = filter(lambda p: p.requires_grad, model.parameters())
     parameters = sum([np.prod(p.size()) for p in parameters]) / 1_000
     print('Trainable Parameters: %.3fK' % parameters)
-
     return parameters

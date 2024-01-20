@@ -113,7 +113,7 @@ if __name__ == "__main__":
 
     model = MlpMixer(
         in_channels=3,
-        image_size=32,
+        img_size=32,
         patch_size=4,
         tokens_mlp_dim=64,
         channels_mlp_dim=512,
@@ -124,7 +124,7 @@ if __name__ == "__main__":
     ).to(config.device)
 
     model = ResMLP(
-        image_size=32,
+        img_size=32,
         in_channels=3,
         patch_size=4,
         input_dim=128,

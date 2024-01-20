@@ -13,7 +13,7 @@ class ConvMixer(nn.Module):
         kernel_size: int = 5,
         patch_size: int = 2,
         num_classes: int = 10
-    ):
+    ) -> None:
         super(ConvMixer, self).__init__()
 
         sublayer = nn.Sequential(
@@ -27,7 +27,6 @@ class ConvMixer(nn.Module):
             nn.GELU(),
             nn.BatchNorm2d(hidden_dim)
         )
-
         self.convmixer_layers = nn.Sequential(
             nn.Conv2d(
                 in_channels,
@@ -39,7 +38,7 @@ class ConvMixer(nn.Module):
             nn.BatchNorm2d(hidden_dim),
             *[
                 nn.Sequential(
-                    Residual(sublayer),
+                    ResidualLayer(sublayer),
                     nn.Conv2d(hidden_dim, hidden_dim, kernel_size=1),
                     nn.GELU(),
                     nn.BatchNorm2d(hidden_dim)
@@ -50,20 +49,17 @@ class ConvMixer(nn.Module):
         )
         self.classifier = nn.Linear(hidden_dim, num_classes)
 
-    def forward(self, x):
-
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.convmixer_layers(x)
-        out = self.classifier(x)
-
-        return out
+        return self.classifier(x)
 
 
-class Residual(nn.Module):
-    def __init__(self, layer):
-        super(Residual, self).__init__()
+class ResidualLayer(nn.Module):
+    def __init__(self, layer: nn.Module) -> None:
+        super(ResidualLayer, self).__init__()
         self.layer = layer
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.layer(x) + x
 
 

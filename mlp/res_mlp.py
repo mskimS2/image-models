@@ -8,7 +8,7 @@ class AffineTransformLayer(nn.Module):
     def __init__(
         self, 
         hidden_dim: int
-    ):
+    ) -> None:
         """
         Args
             hidden_dim : int
@@ -19,10 +19,8 @@ class AffineTransformLayer(nn.Module):
         self.alpha = nn.Parameter(torch.ones([1, 1, hidden_dim]))
         self.beta = nn.Parameter(torch.zeros([1, 1, hidden_dim]))
 
-    def forward(self, x):
-        x = self.alpha * x + self.beta
-
-        return x
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.alpha * x + self.beta
 
 
 class FeedForwardLayer(nn.Module):
@@ -31,7 +29,7 @@ class FeedForwardLayer(nn.Module):
         input_dim: int,
         hidden_dim: int,
         dropout_p: float = 0.
-    ):
+    ) -> None:
         super(FeedForwardLayer, self).__init__()
 
         self.net = nn.Sequential(
@@ -42,7 +40,7 @@ class FeedForwardLayer(nn.Module):
             nn.Dropout(dropout_p)
         )
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.net(x)
 
 
@@ -55,7 +53,7 @@ class CommunicationLayer(nn.Module):
         num_patch: int,
         dropout: float,
         init_values: float = 1e-4
-    ):
+    ) -> None:
         super(CommunicationLayer, self).__init__()
 
         self.pre_affine = AffineTransformLayer(input_dim)
@@ -77,12 +75,11 @@ class CommunicationLayer(nn.Module):
             requires_grad=True
         )
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.pre_affine(x)
         x = x + self.gamma_1 * self.token_mix(x)
         x = self.post_affine(x)
         x = x + self.gamma_2 * self.ff(x)
-
         return x
 
 
@@ -90,7 +87,7 @@ class ResMLP(nn.Module):
 
     def __init__(
         self,
-        image_size: int,
+        img_size: int,
         in_channels: int,
         input_dim: int,
         patch_size: int,
@@ -98,12 +95,11 @@ class ResMLP(nn.Module):
         dropout_p: float,
         n_layers: int,
         num_classes: int,
-    ):
+    ) -> None:
         super(ResMLP, self).__init__()
 
-        assert image_size % patch_size == 0, 'Image dimensions must be divisible by the patch size.'
-        self.num_patch = (image_size // patch_size) ** 2
-
+        assert img_size % patch_size == 0, "`img_size` must be divisible by the `patch_size`."
+        self.num_patch = (img_size // patch_size) ** 2
         self.to_patch_embedding = nn.Sequential(
             nn.Conv2d(in_channels, input_dim, patch_size, patch_size),
             Rearrange('b c h w -> b (h w) c'),
@@ -121,15 +117,12 @@ class ResMLP(nn.Module):
         self.affine = AffineTransformLayer(input_dim)
         self.classifier = nn.Linear(input_dim, num_classes)
 
-    def forward(self, x):
-
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.to_patch_embedding(x)
         x = self.feedforward_layers(x)
         x = self.affine(x)
         x = x.mean(dim=1)
-        out = self.classifier(x)
-
-        return out
+        return self.classifier(x)
 
 
 if __name__ == '__main__':
@@ -137,7 +130,7 @@ if __name__ == '__main__':
 
     # test code
     resmlp = ResMLP(
-        image_size=32,
+        img_size=32,
         in_channels=3,
         patch_size=4,
         input_dim=128,

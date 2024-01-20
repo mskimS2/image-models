@@ -19,7 +19,7 @@ def drop_path(
 
 
 class DropPath(nn.Module):
-    def __init__(self, drop_prob: float = 0.):
+    def __init__(self, drop_prob: float = 0.) -> None:
         super(DropPath, self).__init__()
         self.drop_prob = drop_prob
 
