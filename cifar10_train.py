@@ -4,7 +4,7 @@ from torch import nn
 from sklearn import metrics
 from torchvision import transforms
 
-from dataset import CIFAR10
+from dataset.custom import CIFAR10
 from trainer.config import Config
 from trainer.trainer import Trainer
 from mlp.mlp_mixer import MlpMixer

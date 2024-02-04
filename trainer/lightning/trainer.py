@@ -44,7 +44,7 @@ class ImageClassifierTrainer(pl.LightningModule):
         loss = self.loss_fn(logits, y)
         self.valid_loss(loss)
         self.log(
-            name="valid/loss",
+            name="val/loss",
             value=self.valid_loss,
             on_step=False,
             on_epoch=True,

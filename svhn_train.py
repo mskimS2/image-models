@@ -5,7 +5,7 @@ from torch import nn
 from sklearn import metrics
 from torchvision import transforms
 
-from dataset import SVHN
+from dataset.custom import SVHN
 from transform.auto_aug import AutoAugment
 from trainer.config import Config
 from trainer.trainer import Trainer
