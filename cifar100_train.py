@@ -3,10 +3,10 @@ from torch import nn
 from sklearn import metrics
 from torchvision import transforms
 
-from dataset import Cifar100
+from dataset.custom import Cifar100
 from transform.auto_aug import AutoAugment
-from trainer.config import Config
-from trainer.trainer import Trainer
+from trainer.custom.config import Config
+from trainer.custom.trainer import Trainer
 from mlp.mlp_mixer import MlpMixer
 from mlp.res_mlp import ResMLP
 from mlp.conv_mixer import ConvMixer

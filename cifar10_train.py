@@ -5,8 +5,8 @@ from sklearn import metrics
 from torchvision import transforms
 
 from dataset.custom import CIFAR10
-from trainer.config import Config
-from trainer.trainer import Trainer
+from trainer.custom.config import Config
+from trainer.custom.trainer import Trainer
 from mlp.mlp_mixer import MlpMixer
 from transform.auto_aug import AutoAugment
 from utils import get_parameters

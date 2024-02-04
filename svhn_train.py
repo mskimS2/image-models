@@ -7,8 +7,8 @@ from torchvision import transforms
 
 from dataset.custom import SVHN
 from transform.auto_aug import AutoAugment
-from trainer.config import Config
-from trainer.trainer import Trainer
+from trainer.custom.config import Config
+from trainer.custom.trainer import Trainer
 from mlp.mlp_mixer import MlpMixer
 from mlp.res_mlp import ResMLP
 from mlp.conv_mixer import ConvMixer

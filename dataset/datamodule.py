@@ -5,6 +5,8 @@ from torch.utils.data import random_split, DataLoader
 
 
 class CIFAR10DataModule(pl.LightningDataModule):
+    name: str = "cifar10"
+    
     def __init__(self, batch_size: int, data_dir: str = "./", transform = None, ratio: float = 0.2):
         super().__init__()
         self.data_dir = data_dir
@@ -38,6 +40,8 @@ class CIFAR10DataModule(pl.LightningDataModule):
     
     
 class CIFAR100DataModule(pl.LightningDataModule):
+    name: str = "cifar100"
+    
     def __init__(self, batch_size: int, data_dir: str = "./", transform=None, ratio: float=0.2):
         super().__init__()
         self.data_dir = data_dir
@@ -71,6 +75,8 @@ class CIFAR100DataModule(pl.LightningDataModule):
     
     
 class SVHNDataModule(pl.LightningDataModule):
+    name: str = "svhn"
+    
     def __init__(self, batch_size: int, data_dir: str = "./", transform = None, ratio: float = 0.2):
         super().__init__()
         self.data_dir = data_dir
