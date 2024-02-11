@@ -1,13 +1,60 @@
-import pytorch_lightning as pl
+from pytorch_lightning import LightningDataModule, Trainer
+from pytorch_lightning.accelerators.cpu import CPUAccelerator
+from torch.utils.data import DataLoader
 from torchvision import transforms
 from torchvision.datasets import CIFAR10, CIFAR100, SVHN
 from torch.utils.data import random_split, DataLoader
+from typing import Any, Dict
 
+class ImageDataModule(LightningDataModule):
+    hparams: Dict[Any]
+    trainer: Trainer
+    
+    def __init__(self, config: Dict[Any], dataset) -> None:
+        super(ImageDataModule, self).__init__()
+        
+        self.save_hyperparameters(config)
+        self.dataset = dataset
+        
+    def setup(self, _stage: str = None):
+        self.dataset(split="train")
+        self.dataset(split="validation")
+        
+    def train_dataloader(self) -> DataLoader:
+        return DataLoader(
+            dataset=self.dataset(transforms, split="train"),
+            batch_size=self.hparams.batch_size, 
+            shuffle=True, 
+            drop_last=True, 
+            shuffle=True,
+            num_workers=0 if self.on_device else self.trainer.num_devices*4,
+            prefetch_factor=2,
+            persistant_workers=True,
+            pin_memory=not self.on_device,
+        )
+        
+    def val_dataloader(self) -> DataLoader:
+        return DataLoader(
+            dataset=self.dataset(transforms, split="validation"), 
+            batch_size=self.hparams.batch_size, 
+            shuffle=False, 
+            drop_last=True, 
+            shuffle=True,
+            num_workers=0 if self.on_device else self.trainer.num_devices*4,
+            prefetch_factor=2,
+            persistant_workers=True,
+            pin_memory=not self.on_device,
+        )
+    
+    @property
+    def on_device(self) -> bool:
+        return isinstance(self.trainer.accelerator, CPUAccelerator)
+        
 
-class CIFAR10DataModule(pl.LightningDataModule):
+class CIFAR10DataModule(LightningDataModule):
     name: str = "cifar10"
     
-    def __init__(self, batch_size: int, data_dir: str = "./", transform = None, ratio: float = 0.2):
+    def __init__(self, batch_size: int, data_dir: str = "~/data/cifar10", transform = None, ratio: float = 0.2):
         super().__init__()
         self.data_dir = data_dir
         self.batch_size = batch_size
@@ -39,10 +86,10 @@ class CIFAR10DataModule(pl.LightningDataModule):
         return DataLoader(self.cifar_test, batch_size=self.batch_size)
     
     
-class CIFAR100DataModule(pl.LightningDataModule):
+class CIFAR100DataModule(LightningDataModule):
     name: str = "cifar100"
     
-    def __init__(self, batch_size: int, data_dir: str = "./", transform=None, ratio: float=0.2):
+    def __init__(self, batch_size: int, data_dir: str = "~/data/cifar100", transform=None, ratio: float=0.2):
         super().__init__()
         self.data_dir = data_dir
         self.batch_size = batch_size
@@ -74,10 +121,10 @@ class CIFAR100DataModule(pl.LightningDataModule):
         return DataLoader(self.cifar_test, batch_size=self.batch_size)
     
     
-class SVHNDataModule(pl.LightningDataModule):
+class SVHNDataModule(LightningDataModule):
     name: str = "svhn"
     
-    def __init__(self, batch_size: int, data_dir: str = "./", transform = None, ratio: float = 0.2):
+    def __init__(self, batch_size: int, data_dir: str = "~/data/svhn", transform = None, ratio: float = 0.2):
         super().__init__()
         self.data_dir = data_dir
         self.batch_size = batch_size
