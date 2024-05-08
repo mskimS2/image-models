@@ -31,16 +31,7 @@ def main() -> None:
 
     datamodule = LitCIFAR10DataModule()
     model = LitCIFAR10Model(trainer)
-
-    # if cfg.runs.evaluate:
-    #     hparams = OmegaConf.load(cfg.test.hparams)
-    #     model = LitCIFAR10Model.load_from_checkpoint(
-    #         checkpoint_path=cfg.test.checkpoint, **hparams
-    #     )
-    #     trainer.test(model, datamodule.test_dataloader())
-    # else:
     trainer.fit(model, datamodule)
-    # NOTE After changing to pytorch-lightning 1.5.2, omitting the argument of trainer.test() does not work. · Discussion #10747 · PyTorchLightning/pytorch-lightning https://github.com/PyTorchLightning/pytorch-lightning/discussions/10747
     trainer.test(model, datamodule.test_dataloader())
 
 
