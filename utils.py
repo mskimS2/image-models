@@ -16,8 +16,8 @@ def set_randomseed(random_seed: int = 42):
     torch.backends.cudnn.benchmark = False
     np.random.seed(random_seed)
     random.seed(random_seed)
-
-
+    
+    
 def get_model(config):
     if config.model_name == "mlpmixer":
         return MlpMixer(

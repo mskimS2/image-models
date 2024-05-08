@@ -7,7 +7,6 @@ from torch.utils.data import random_split, DataLoader
 from typing import Any, Dict
 from torchvision import transforms as T
 
-
 class ImageDataModule(LightningDataModule):
     trainer: Trainer
     
@@ -37,8 +36,8 @@ class ImageDataModule(LightningDataModule):
         return DataLoader(
             dataset=self.dataset(transforms, split="validation"), 
             batch_size=self.hparams.batch_size, 
-            shuffle=False, 
             drop_last=True, 
+            shuffle=True,
             num_workers=0 if self.on_device else self.trainer.num_devices*4,
             prefetch_factor=2,
             persistant_workers=True,
@@ -118,7 +117,42 @@ class CIFAR100DataModule(LightningDataModule):
 
     def test_dataloader(self):
         return DataLoader(self.cifar_test, batch_size=self.batch_size)
+    
+    
+class SVHNDataModule(LightningDataModule):
+    name: str = "svhn"
+    
+    def __init__(self, batch_size: int, data_dir: str = "~/data/svhn", transform = None, ratio: float = 0.2):
+        super().__init__()
+        self.data_dir = data_dir
+        self.batch_size = batch_size
+        self.transform = transform
+        self.num_classes = 10
+        self.ratio = ratio
+    
+    def prepare_data(self):
+        SVHN(self.data_dir, train=True, download=True)
+        SVHN(self.data_dir, train=False, download=True)
+    
+    def setup(self, stage=None):
+        if stage == "fit" or stage is None:
+            svhn_full = SVHN(self.data_dir, train=True, transform=self.transform)
+            train_ratio = int(len(svhn_full) * (1 - self.ratio))
+            val_ratio  = len(svhn_full) - train_ratio
+            self.svhn_train, self.svhn_val = random_split(svhn_full, [train_ratio, val_ratio])
 
+        if stage == "test" or stage is None:
+            self.svhn_test = SVHN(self.data_dir, train=False, transform=self.transform)
+    
+    def train_dataloader(self):
+        return DataLoader(self.svhn_train, batch_size=self.batch_size, shuffle=True)
+
+    def val_dataloader(self):
+        return DataLoader(self.svhn_val, batch_size=self.batch_size)
+
+    def test_dataloader(self):
+        return DataLoader(self.svhn_test, batch_size=self.batch_size)
+    
 class LitCIFAR10DataModule(LightningDataModule):
     def __init__(self, normalization: str = "imagenet", data_dir: str = "~/data/cifar10"):
         super(LitCIFAR10DataModule, self).__init__()
@@ -178,37 +212,3 @@ class LitCIFAR10DataModule(LightningDataModule):
 
     def test_dataloader(self):
         return self.val_dataloader()    
-    
-class SVHNDataModule(LightningDataModule):
-    name: str = "svhn"
-    
-    def __init__(self, batch_size: int, data_dir: str = "~/data/svhn", transform = None, ratio: float = 0.2):
-        super().__init__()
-        self.data_dir = data_dir
-        self.batch_size = batch_size
-        self.transform = transform
-        self.num_classes = 10
-        self.ratio = ratio
-    
-    def prepare_data(self):
-        SVHN(self.data_dir, train=True, download=True)
-        SVHN(self.data_dir, train=False, download=True)
-    
-    def setup(self, stage=None):
-        if stage == "fit" or stage is None:
-            svhn_full = SVHN(self.data_dir, train=True, transform=self.transform)
-            train_ratio = int(len(svhn_full) * (1 - self.ratio))
-            val_ratio  = len(svhn_full) - train_ratio
-            self.svhn_train, self.svhn_val = random_split(svhn_full, [train_ratio, val_ratio])
-
-        if stage == "test" or stage is None:
-            self.svhn_test = SVHN(self.data_dir, train=False, transform=self.transform)
-    
-    def train_dataloader(self):
-        return DataLoader(self.svhn_train, batch_size=self.batch_size, shuffle=True)
-
-    def val_dataloader(self):
-        return DataLoader(self.svhn_val, batch_size=self.batch_size)
-
-    def test_dataloader(self):
-        return DataLoader(self.svhn_test, batch_size=self.batch_size)
