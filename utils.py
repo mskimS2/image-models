@@ -1,21 +1,11 @@
 import torch
-import random
 import numpy as np
 
 from mlp.mlp_mixer import MlpMixer
 from mlp.res_mlp import ResMLP
 from mlp.conv_mixer import ConvMixer
 from transformer.vit import VisionTransformer
-
-
-def set_randomseed(random_seed: int = 42):
-    torch.manual_seed(random_seed)
-    torch.cuda.manual_seed(random_seed)
-    torch.cuda.manual_seed_all(random_seed) # if use multi-GPU
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
-    np.random.seed(random_seed)
-    random.seed(random_seed)
+from utils import get_parameters
 
 
 def get_model(config):
