@@ -5,8 +5,9 @@ from dataclasses import dataclass
 
 @dataclass
 class Config:
-    experiment_name = 'default'
-    device: Optional[str] = 'cuda'  # cuda or cpu
+    experiment_name = "default"
+    device: Optional[str] = "cuda"  # cuda or cpu
+    dataset_name: str = "cifar10" # cifar10, cifar100, svhn
 
     epochs: Optional[int] = 200
     training_batch_size: Optional[int] = 16
@@ -16,11 +17,11 @@ class Config:
     fp16: Optional[int] = False
     num_workers: Optional[int] = 2
     pin_memory: Optional[bool] = True
-    save_dir: Optional[str] = 'save'
+    save_dir: Optional[str] = "save"
     model_name: Optional[str] = None
 
     # scheduler parameters
-    step_scheduler_after: Optional[str] = 'epoch'  # "epoch" or "batch"
+    step_scheduler_after: Optional[str] = "epoch"  # "epoch" or "batch"
     step_scheduler_metric: Optional[str] = None
 
     train_shuffle: Optional[bool] = True

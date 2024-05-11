@@ -60,5 +60,6 @@ if __name__ == "__main__":
     model = ImageClassifierTrainer(
         args.epochs, args.warmup_epochs, args.lr, datamodule.num_classes, cnn, trainer, criterion
     )
+
     trainer.fit(model, datamodule)
     trainer.test(model, datamodule.test_dataloader())
