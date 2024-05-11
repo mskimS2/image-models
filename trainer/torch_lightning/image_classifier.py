@@ -27,10 +27,8 @@ class ImageClassifierTrainer(LightningModule):
 
     def __init__(
         self,
-        epochs: int = 100,
-        warmpup_epochs: int = 10,
-        lr: float = 1e-3,
-        num_classes: int = 10,
+        config: Dict,
+        num_classes: int = None,
         model: nn.Module = None,
         trainer: Trainer = None,
         criterion: nn.Module = None,
@@ -39,7 +37,7 @@ class ImageClassifierTrainer(LightningModule):
     ):
         super(ImageClassifierTrainer, self).__init__(*args, **kwargs)
 
-        self.save_hyperparameters()  # save the `hparams` to the `self` object
+        self.save_hyperparameters(config)  # save the `hparams` to the `self` object
 
         self.criterion = criterion
         self.model = model
@@ -99,7 +97,7 @@ class ImageClassifierTrainer(LightningModule):
             optimizer=optimizer,
             max_lr=self.hparams.lr,
             total_steps=self.trainer.estimated_stepping_batches,
-            pct_start=self.hparams.warmpup_epochs / self.hparams.epochs,
+            pct_start=self.hparams.warmup_epochs / self.hparams.epochs,
             anneal_strategy="linear",
         )
 
