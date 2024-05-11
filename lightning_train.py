@@ -33,7 +33,7 @@ if __name__ == "__main__":
         case "cifar10":
             datamodule = CIFAR10DataModule(args.batch_size)
         case "svhn":
-            datamodule = CIFAR10DataModule(args.batch_size)
+            datamodule = SVHNDataModule(args.batch_size)
         case "cifar100":
             datamodule = CIFAR100DataModule(args.batch_size)
 

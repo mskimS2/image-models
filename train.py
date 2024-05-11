@@ -27,10 +27,14 @@ class ImageClassifier(nn.Module):
         targets = targets.cpu().detach().numpy()
         f1 = metrics.f1_score(targets, outputs, average="macro")
         acc = metrics.accuracy_score(targets, outputs)
+        recall = metrics.recall_score(targets, outputs, average="macro")
+        precision = metrics.precision_score(targets, outputs, average="macro")
 
         return {
             "f1": torch.tensor(f1, device=device),
             "acc": torch.tensor(acc, device=device),
+            "recall": torch.tensor(recall, device=device),
+            "precision": torch.tensor(precision, device=device),
         }
 
     def fetch_optimizer_and_scheduler(self):
@@ -84,7 +88,10 @@ def get_dataset_and_dataloader(config: Config):
     )
 
     test_aug = transforms.Compose(
-        [transforms.ToTensor(), transforms.Normalize(mean=[0.4914, 0.4822, 0.4465], std=[0.2023, 0.1994, 0.2010])]
+        [
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.4914, 0.4822, 0.4465], std=[0.2023, 0.1994, 0.2010]),
+        ]
     )
 
     match config.dataset_name:
