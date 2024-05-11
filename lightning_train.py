@@ -1,3 +1,4 @@
+import argparse
 from torch import nn
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import (
@@ -9,20 +10,40 @@ from pytorch_lightning.callbacks import (
     RichProgressBar,
 )
 from pytorch_lightning.loggers import TensorBoardLogger, WandbLogger
-from dataset.datamodule import LitCIFAR10DataModule
+from dataset.datamodule import CIFAR10DataModule, CIFAR100DataModule, SVHNDataModule
 from trainer.torch_lightning.image_classifier import ImageClassifierTrainer, VAL_LOSS
 
 from mlp.cnn import CNN
-from configs.config import Config
 from utils import set_randomseed
 
 
 if __name__ == "__main__":
     set_randomseed()
+
+    p = argparse.ArgumentParser(description="CNN")
+    p.add_argument("--lr", default=1e-3, type=float)
+    p.add_argument("--batch_size", default=32, type=int)
+    p.add_argument("--dataset", default="cifar10", type=str, choices=["cifar10", "cifar100", "svhn"])
+    p.add_argument("--epochs", default=100, type=int)
+    p.add_argument("--warmup_epochs", default=10, type=int)
+    args = p.parse_args()
+
+    datamodule = CIFAR100DataModule(args.batch_size)
+    match args.dataset:
+        case "cifar10":
+            datamodule = CIFAR10DataModule(args.batch_size)
+        case "svhn":
+            datamodule = CIFAR10DataModule(args.batch_size)
+        case "cifar100":
+            datamodule = CIFAR100DataModule(args.batch_size)
+
     logger = TensorBoardLogger("logs", name="cnn")
 
-    checkpoint = ModelCheckpoint(monitor=VAL_LOSS, mode="min",save_last=True)
+    checkpoint = ModelCheckpoint(monitor=VAL_LOSS, mode="min", save_last=True)
+
     lr_monitor = LearningRateMonitor(logging_interval="step")
+
+    criterion = nn.CrossEntropyLoss()
 
     trainer = Trainer(
         logger=logger,
@@ -35,18 +56,9 @@ if __name__ == "__main__":
         callbacks=[checkpoint, lr_monitor],
     )
 
-    config = Config(
-        training_batch_size=128,
-        validation_batch_size=128,
-        epochs=300,
-        lr=1e-3,
-        num_classes=10,
-        step_scheduler_after='epoch',
-        step_scheduler_metric='valid_f1',
-        model_name='mlpmixer',
-        num_workers=2,
+    cnn = CNN(datamodule.num_classes)
+    model = ImageClassifierTrainer(
+        args.epochs, args.warmup_epochs, args.lr, datamodule.num_classes, cnn, trainer, criterion
     )
-    datamodule = LitCIFAR10DataModule()
-    model = ImageClassifierTrainer(100, 10, 1e-3, 10, CNN(), trainer, nn.CrossEntropyLoss())
     trainer.fit(model, datamodule)
     trainer.test(model, datamodule.test_dataloader())
