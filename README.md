@@ -1,6 +1,5 @@
-# Awesome-MLP
+# Image Model Zoo
 This repository is an unofficial PyTorch implementation of Feedforward and Transformer based Networks (such as mlp-mixer, vit, ...). most experiments are performed on small benchmark datasets.
-<br>
 <br>
 
 # Experiemental Results
