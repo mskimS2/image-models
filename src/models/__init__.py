@@ -1,11 +1,14 @@
+import os
+import torch
 from models.cnn.cnn import CNN
 from models.mlp.mlp_mixer import MlpMixer
 from models.mlp.res_mlp import ResMLP
 from models.mlp.conv_mixer import ConvMixer
 from models.mlp.g_mlp import gMLP
 from models.mlp.gfnet import GFNet
-
 from models.transformer.vit import VisionTransformer
+from models.transformer.mae import MaskedAutoEncoder
+from models.linear_probing import MAELinearProbing
 
 from configs.config import Config
 
@@ -81,5 +84,41 @@ def get_model(config: Config):
             in_channels=config.in_channels,
             num_classes=config.num_classes,
         )
+
+    elif config.model_name == "mae":
+        return MaskedAutoEncoder(
+            img_size=config.img_size,  # 32
+            patch_size=config.patch_size,  # 2
+            emb_dim=config.embed_dim,  # 192
+            encoder_layer=config.encoder_layer,  # 12
+            encoder_head=config.encoder_head,  # 3
+            decoder_layer=config.decoder_layer,  # 4
+            decoder_head=config.decoder_head,  # 3
+            mask_ratio=config.mask_ratio,  # 0.75
+        )
+
+    elif config.model_name == "mae_linear_probing":
+        mae = MaskedAutoEncoder(
+            image_size=config.img_size,  # 32
+            patch_size=config.patch_size,  # 2
+            emb_dim=config.embed_dim,  # 192
+            encoder_layers=config.encoder_layer,  # 12
+            encoder_heads=config.encoder_head,  # 3
+            decoder_layers=config.decoder_layer,  # 4
+            decoder_heads=config.decoder_head,  # 3
+            mask_ratio=config.mask_ratio,  # 0.75
+        )
+
+        if not config.pretrained_path or not os.path.exists(config.pretrained_path):
+            raise ValueError(
+                f"Invalid pretrained path: {config.pretrained_path}. Please provide a valid path for MAE Linear Probing."
+            )
+
+        try:
+            mae.load_state_dict(torch.load(config.pretrained_path))
+        except Exception as e:
+            raise RuntimeError(f"Failed to load pretrained weights from {config.pretrained_path}. Error: {str(e)}")
+
+        return MAELinearProbing(backbone=mae.encoder, num_classes=config.num_classes)
 
     raise ValueError(f"No models found with {config.model_name}.")

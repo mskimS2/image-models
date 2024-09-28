@@ -15,7 +15,12 @@ if __name__ == "__main__":
 
     p = argparse.ArgumentParser()
     p.add_argument("--lr", default=1e-3, type=float)
-    p.add_argument("--model", default="cnn", type=str, choices=["cnn"])
+    p.add_argument(
+        "--model",
+        default="cnn",
+        type=str,
+        choices=["cnn", "mlpmixer", "resmlp", "convmixer", "vit", "gmlp", "mae", "mae_linear_probing"],
+    )
     p.add_argument("--batch_size", default=32, type=int)
     p.add_argument("--dirpath", default="logs", type=str)
     p.add_argument("--dataset", default="cifar10", type=str, choices=["cifar10", "cifar100", "svhn"])
@@ -24,6 +29,8 @@ if __name__ == "__main__":
     p.add_argument("--fp", default=32, type=int, choices=[16, 32])
     p.add_argument("--save_top_k", default=3, type=int)
     p.add_argument("--patience", default=4, type=int)
+    p.add_argument("--ssl", default=False, type=bool, help="use classification or pretrain(self-supervised learning)")
+    p.add_argument("--pretrained_path", default="", type=str, help="pretrained model(backbone model) path")
     args = p.parse_args()
 
     datamodule = get_dataset(args.dataset, args.batch_size)
@@ -31,6 +38,8 @@ if __name__ == "__main__":
     logger = TensorBoardLogger(args.dirpath, name=args.model)
 
     criterion = nn.CrossEntropyLoss()
+    if args.ssl:
+        criterion = nn.MSELoss()
 
     trainer = Trainer(
         logger=logger,
@@ -63,11 +72,10 @@ if __name__ == "__main__":
         ],
     )
 
-    c = Config()
-    print(c)
-    model = get_model(c)
-    # model = CNN(datamodule.num_classes)
+    cfg = Config()
+    model = get_model(cfg)
     classifier = ImageClassifierTrainer(args, datamodule.num_classes, model, trainer, criterion)
 
     trainer.fit(classifier, datamodule)
-    trainer.test(classifier, datamodule.test_dataloader())
+    if not args.ssl:
+        trainer.test(classifier, datamodule.test_dataloader())

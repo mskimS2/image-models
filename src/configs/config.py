@@ -22,6 +22,16 @@ class Config:
     save_top_k: Optional[int] = 3
     patience: Optional[int] = 4
 
+    # ex. mae parameters
+    img_size: Optional[int] = 32
+    patch_size: Optional[int] = 2
+    embed_dim: Optional[int] = 192
+    encoder_layer: Optional[int] = 12
+    encoder_head: Optional[int] = 3
+    decoder_layer: Optional[int] = 4
+    decoder_head: Optional[int] = 3
+    mask_ratio: Optional[float] = 0.75
+
     # logging
     dirpath: Optional[str] = "logs"
 
