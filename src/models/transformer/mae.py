@@ -7,6 +7,7 @@ from einops.layers.torch import Rearrange
 from timm.models.layers import trunc_normal_
 from timm.models.vision_transformer import Block
 from typing import Tuple, List
+import pytorch_lightning as pl
 
 
 def random_indexes(size: int) -> Tuple[np.ndarray, np.ndarray]:
@@ -32,6 +33,8 @@ def take_indexes(sequences: torch.Tensor, indexes: torch.Tensor) -> torch.Tensor
     Returns:
     - torch.Tensor: Gathered sequences based on the provided indexes.
     """
+    device = sequences.device
+    indexes = indexes.to(device)
     return torch.gather(sequences, 0, repeat(indexes, "t b -> t b c", c=sequences.shape[-1]))
 
 
@@ -210,7 +213,7 @@ class MAEDecoder(nn.Module):
         return img, mask
 
 
-class MaskedAutoEncoder(torch.nn.Module):
+class MaskedAutoEncoder(nn.Module):
     def __init__(
         self,
         img_size: int = 32,
@@ -236,7 +239,14 @@ class MaskedAutoEncoder(torch.nn.Module):
         - mask_ratio (float): Ratio of patches to be masked.
         """
         super(MaskedAutoEncoder, self).__init__()
-
+        self.img_size = img_size
+        self.patch_size = patch_size
+        self.emb_dim = emb_dim
+        self.encoder_layer = encoder_layer
+        self.encoder_head = encoder_head
+        self.decoder_layer = decoder_layer
+        self.decoder_head = decoder_head
+        self.mask_ratio = mask_ratio
         self.encoder = MAEEncoder(img_size, patch_size, emb_dim, encoder_layer, encoder_head, mask_ratio)
         self.decoder = MAEDecoder(img_size, patch_size, emb_dim, decoder_layer, decoder_head)
 
@@ -249,8 +259,8 @@ class MaskedAutoEncoder(torch.nn.Module):
         - Tuple[torch.Tensor, torch.Tensor]: Reconstructed image and the mask.
         """
         features, backward_indexes = self.encoder(image)
-        predicted_img, mask = self.decoder(features, backward_indexes)
-        return predicted_img, mask
+        pred_img, mask = self.decoder(features, backward_indexes)
+        return pred_img, mask
 
 
 if __name__ == "__main__":
@@ -265,7 +275,9 @@ if __name__ == "__main__":
     encoder = MAEEncoder()
     decoder = MAEDecoder()
 
-    features, bwd_idx = encoder(input_img)
-    predicted_img, mask = decoder(features, bwd_idx)
+    mae = MaskedAutoEncoder()
+    # features, bwd_idx = encoder(input_img)
+    # predicted_img, mask = decoder(features, bwd_idx)
+    predicted_img, mask = mae(input_img)
     print(predicted_img.shape)
     print(torch.mean((predicted_img - input_img) ** 2 * mask / 0.75))

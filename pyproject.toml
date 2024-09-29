@@ -23,6 +23,8 @@ pytorch-lightning = "^1.7.7"
 datasets = "^2.19.1"
 einops = "^0.8.0"
 torchsummary = "^1.5.1"
+timm = "^1.0.9"
+scikit-learn = "^1.5.2"
 
 [[tool.poetry.source]]
 name = "torch"
